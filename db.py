@@ -3,6 +3,7 @@ import sqlalchemy
 from sqlalchemy import text
 from sqlalchemy.engine.url import URL
 import streamlit as st  # Works only in a Streamlit app
+from dotenv import load_dotenv
 
 # Database connection parameters
 DB_USER = "avnadmin"
