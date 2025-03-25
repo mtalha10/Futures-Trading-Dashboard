@@ -2,18 +2,11 @@ import os
 import sqlalchemy
 from sqlalchemy import text
 from sqlalchemy.engine.url import URL
-import streamlit as st  # Works only in a Streamlit app
-from dotenv import load_dotenv
+# Removed streamlit and dotenv imports since we're not using them
 
 # Database connection parameters
 DB_USER = "avnadmin"
-
-# Use Streamlit secrets (Only works inside a Streamlit app)
-if "AIVEN_PASSWORD" in st.secrets:
-    DB_PASSWORD = st.secrets["AIVEN_PASSWORD"]
-else:
-    raise ValueError("Error: Database password not found in secrets.toml.")
-
+DB_PASSWORD = "AVNS_tFUlfCsaCIcjgHeMb16"  # Hardcoded password
 DB_HOST = "project-talha.f.aivencloud.com"
 DB_PORT = 21991
 DB_NAME = "defaultdb"
@@ -46,4 +39,3 @@ def test_connection():
 
 if __name__ == "__main__":
     test_connection()
-
