@@ -3,19 +3,11 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <Grants>1||-9223372036854775808|c|G
-1||10|c|G
-1||10|C|G
-1||10|T|G
-4||-9223372036854775808|c|G
-4||10|c|G
-4||10|C|G
-4||10|T|G
-14642||10|c|G
+      <Grants>14642||10|c|G
 14642||10|C|G
 14642||-9223372036854775808|T|G
 14642||10|T|G</Grants>
-      <IntrospectionStateNumber>6129</IntrospectionStateNumber>
+      <IntrospectionStateNumber>17460</IntrospectionStateNumber>
       <ServerVersion>16.8</ServerVersion>
       <StartupTime>1742862776</StartupTime>
       <TimeZones>true ACDT
@@ -1414,7 +1406,7 @@ true posixrules
 14277||10|C|G
 14277||-9223372036854775808|U|G
 14277||10|U|G</Grants>
-      <IntrospectionStateNumber>6129</IntrospectionStateNumber>
+      <IntrospectionStateNumber>17460</IntrospectionStateNumber>
       <ObjectId>16441</ObjectId>
       <OwnerName>avnadmin</OwnerName>
     </database>
@@ -4875,8 +4867,8 @@ timescaledb.disable_load=on</Config>
     <schema id="270" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>6129</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-03-25.14:50:24</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>17460</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-03-26.22:02:56</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>523</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
