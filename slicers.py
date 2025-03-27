@@ -96,9 +96,31 @@ def zone_filter(zone_label, default_hour, default_minute):
 
 def zone_type_filter(zone_label):
     """
-    Creates a dropdown (selectbox) for selecting the zone type condition (Above, Below, or Stacked).
+    Creates a dropdown with more comprehensive zone condition options
     """
-    return st.sidebar.selectbox(f"{zone_label} Type", ["Above", "Below", "Stacked"], index=0)
+    zone_condition_options = {
+        "Zone 1": [
+            "Above Zone 2 & Zone 3",
+            "Below Zone 2 & Zone 3",
+            "Stacked with Zone 2 & Zone 3"
+        ],
+        "Zone 2": [
+            "Above Zone 1 & Zone 3",
+            "Below Zone 1 & Zone 3",
+            "Stacked with Zone 1 & Zone 3"
+        ],
+        "Zone 3": [
+            "Above Zone 1 & Zone 2",
+            "Below Zone 1 & Zone 2",
+            "Stacked with Zone 1 & Zone 2"
+        ]
+    }
+
+    return st.sidebar.selectbox(
+        f"{zone_label} Condition",
+        zone_condition_options[zone_label],
+        index=0
+    )
 
 
 @st.cache_data(show_spinner=False)
@@ -106,48 +128,108 @@ def group_symbols_by_time_zone(start_date, end_date, grouping,
                                zone1_start, zone2_start, zone3_start,
                                zone1_type, zone2_type, zone3_type):
     """
-    Groups symbols by day (or other time grouping) and assigns a zone condition for each zone.
-    This query simulates computing a zone condition by simply returning the parameter values for rows
-    where the ts_event time falls within the zone's window (zone window = start time to start time + 60 minutes).
-    Then it filters (via HAVING) only days that match the user-selected conditions for all three zones.
-
-    Args:
-        start_date, end_date: Date filters.
-        grouping: Time grouping unit (e.g., 'day').
-        zoneX_start: Start time for Zone X.
-        zoneX_type: Selected condition for Zone X (Above/Below/Stacked).
-
-    Returns:
-        A DataFrame with columns: day, zone1_condition, zone2_condition, zone3_condition, symbols.
+    Groups symbols by day and checks complex zone conditions
     """
-    # Compute zone end times by adding 60 minutes.
+    # Compute zone end times
     zone1_end = (datetime.combine(datetime.today(), zone1_start) + timedelta(minutes=60)).time()
     zone2_end = (datetime.combine(datetime.today(), zone2_start) + timedelta(minutes=60)).time()
     zone3_end = (datetime.combine(datetime.today(), zone3_start) + timedelta(minutes=60)).time()
 
     engine = create_engine()
+
     query = f"""
+    WITH zone_data AS (
         SELECT 
             DATE(ts_event) as day,
             MAX(CASE WHEN CAST(ts_event AS time) BETWEEN :zone1_start AND :zone1_end 
-                     THEN :zone1_type ELSE NULL END) as zone1_condition,
+                     THEN high ELSE NULL END) as zone1_max,
             MAX(CASE WHEN CAST(ts_event AS time) BETWEEN :zone2_start AND :zone2_end 
-                     THEN :zone2_type ELSE NULL END) as zone2_condition,
+                     THEN high ELSE NULL END) as zone2_max,
             MAX(CASE WHEN CAST(ts_event AS time) BETWEEN :zone3_start AND :zone3_end 
-                     THEN :zone3_type ELSE NULL END) as zone3_condition,
+                     THEN high ELSE NULL END) as zone3_max,
             string_agg(DISTINCT symbol, ', ') as symbols
         FROM f_ohlcv
         WHERE ts_event BETWEEN :start_date AND :end_date
         GROUP BY day
-        HAVING 
-            MAX(CASE WHEN CAST(ts_event AS time) BETWEEN :zone1_start AND :zone1_end 
-                     THEN :zone1_type ELSE NULL END) = :zone1_type
-            AND MAX(CASE WHEN CAST(ts_event AS time) BETWEEN :zone2_start AND :zone2_end 
-                     THEN :zone2_type ELSE NULL END) = :zone2_type
-            AND MAX(CASE WHEN CAST(ts_event AS time) BETWEEN :zone3_start AND :zone3_end 
-                     THEN :zone3_type ELSE NULL END) = :zone3_type
-        ORDER BY day;
+    ),
+    zone_conditions AS (
+        SELECT 
+            day, 
+            symbols,
+            zone1_max,
+            zone2_max,
+            zone3_max,
+            CASE 
+                WHEN :zone1_type = 'Above Zone 2 & Zone 3' 
+                     AND zone1_max > COALESCE(zone2_max, 0) 
+                     AND zone1_max > COALESCE(zone3_max, 0) 
+                     THEN 'Zone 1 above Zone 2 & Zone 3'
+
+                WHEN :zone1_type = 'Below Zone 2 & Zone 3' 
+                     AND zone1_max < COALESCE(zone2_max, 999999) 
+                     AND zone1_max < COALESCE(zone3_max, 999999) 
+                     THEN 'Zone 1 below Zone 2 & Zone 3'
+
+                WHEN :zone1_type = 'Stacked with Zone 2 & Zone 3' 
+                     AND zone1_max IS NOT NULL 
+                     AND zone2_max IS NOT NULL 
+                     AND zone3_max IS NOT NULL
+                     AND ABS(zone1_max - zone2_max) < 0.1 
+                     AND ABS(zone1_max - zone3_max) < 0.1 
+                     THEN 'Zone 1 stacked with Zone 2 & Zone 3'
+
+                WHEN :zone2_type = 'Above Zone 1 & Zone 3' 
+                     AND zone2_max > COALESCE(zone1_max, 0) 
+                     AND zone2_max > COALESCE(zone3_max, 0) 
+                     THEN 'Zone 2 above Zone 1 & Zone 3'
+
+                WHEN :zone2_type = 'Below Zone 1 & Zone 3' 
+                     AND zone2_max < COALESCE(zone1_max, 999999) 
+                     AND zone2_max < COALESCE(zone3_max, 999999) 
+                     THEN 'Zone 2 below Zone 1 & Zone 3'
+
+                WHEN :zone2_type = 'Stacked with Zone 1 & Zone 3' 
+                     AND zone1_max IS NOT NULL 
+                     AND zone2_max IS NOT NULL 
+                     AND zone3_max IS NOT NULL
+                     AND ABS(zone2_max - zone1_max) < 0.1 
+                     AND ABS(zone2_max - zone3_max) < 0.1 
+                     THEN 'Zone 2 stacked with Zone 1 & Zone 3'
+
+                WHEN :zone3_type = 'Above Zone 1 & Zone 2' 
+                     AND zone3_max > COALESCE(zone1_max, 0) 
+                     AND zone3_max > COALESCE(zone2_max, 0) 
+                     THEN 'Zone 3 above Zone 1 & Zone 2'
+
+                WHEN :zone3_type = 'Below Zone 1 & Zone 2' 
+                     AND zone3_max < COALESCE(zone1_max, 999999) 
+                     AND zone3_max < COALESCE(zone2_max, 999999) 
+                     THEN 'Zone 3 below Zone 1 & Zone 2'
+
+                WHEN :zone3_type = 'Stacked with Zone 1 & Zone 2' 
+                     AND zone1_max IS NOT NULL 
+                     AND zone2_max IS NOT NULL 
+                     AND zone3_max IS NOT NULL
+                     AND ABS(zone3_max - zone1_max) < 0.1 
+                     AND ABS(zone3_max - zone2_max) < 0.1 
+                     THEN 'Zone 3 stacked with Zone 1 & Zone 2'
+
+                ELSE NULL
+            END as zone_relationship
+        FROM zone_data
+    )
+    SELECT 
+        day, 
+        symbols,
+        zone1_max,
+        zone2_max,
+        zone3_max,
+        zone_relationship
+    FROM zone_conditions
+    WHERE zone_relationship IS NOT NULL
+    ORDER BY day;
     """
+
     params = {
         "start_date": start_date,
         "end_date": end_date,
@@ -159,7 +241,8 @@ def group_symbols_by_time_zone(start_date, end_date, grouping,
         "zone3_end": zone3_end.strftime("%H:%M:%S"),
         "zone1_type": zone1_type,
         "zone2_type": zone2_type,
-        "zone3_type": zone3_type,
+        "zone3_type": zone3_type
     }
+
     df = pd.read_sql_query(text(query), engine, params=params)
     return df

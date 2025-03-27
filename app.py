@@ -58,6 +58,10 @@ def main():
         zone1_type, zone2_type, zone3_type
     )
     if not df_grouped.empty:
+        st.write(f"**Matching Days for Conditions:**")
+        st.write(f"- Zone 1: {zone1_type}")
+        st.write(f"- Zone 2: {zone2_type}")
+        st.write(f"- Zone 3: {zone3_type}")
         st.dataframe(df_grouped)
     else:
         st.write("No data available for the selected parameters.")
