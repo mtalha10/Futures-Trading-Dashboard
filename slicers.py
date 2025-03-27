@@ -246,3 +246,5 @@ def group_symbols_by_time_zone(start_date, end_date, grouping,
 
     df = pd.read_sql_query(text(query), engine, params=params)
     return df
+
+
