@@ -7,16 +7,20 @@ from slicers import (
     zone_type_filter,
     group_symbols_by_time_zone
 )
-from charts import plot_retracement_bar_chart, \
-    plot_zone1_retracement_bar_chart  # Add this import
+from charts import plot_retracement_bar_chart, plot_zone1_retracement_bar_chart
 from analysis import get_retracement_stats, get_zone1_retracement_stats
 
-# Define custom CSS to set the background color
+# Define custom CSS to set the background color and full width
 custom_css = """
     <style>
         .stApp {
             background-color: #1A2526;  /* Dark navy blue background */
             color: white;              /* Optional: White text for readability */
+        }
+        .block-container {
+            max-width: 100% !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
         }
     </style>
 """
@@ -59,25 +63,23 @@ def main():
         zone1_type, zone2_type, zone3_type
     )
 
-    # Create tabs
-    tab1, tab2 = st.tabs(["Zone Analysis", "Retracements"])
+    # Symbols Grouped by Day and Zone
+    st.subheader("Symbols Grouped by Day and Zone")
+    if not df_grouped.empty:
+        st.write("**Matching Days for Conditions:**")
+        st.write(f"- Zone 1: {zone1_type}")
+        st.write(f"- Zone 2: {zone2_type}")
+        st.write(f"- Zone 3: {zone3_type}")
+        st.dataframe(df_grouped, use_container_width=True)
+    else:
+        st.write("No data available for the selected parameters.")
 
-    # Zone Analysis Tab
-    with tab1:
-        st.subheader("Symbols Grouped by Day and Zone")
-        if not df_grouped.empty:
-            st.write("**Matching Days for Conditions:**")
-            st.write(f"- Zone 1: {zone1_type}")
-            st.write(f"- Zone 2: {zone2_type}")
-            st.write(f"- Zone 3: {zone3_type}")
-            st.dataframe(df_grouped)
-        else:
-            st.write("No data available for the selected parameters.")
+    # Two-column layout for retracement charts
+    col1, col2 = st.columns(2)
 
-    # Retracements Tab
-    # In the Retracements Tab (inside app.py)
-    with tab2:
-        st.subheader("Midnight Open Retracement Analysis")
+    # Midnight Open Retracement Analysis
+    with col1:
+        st.subheader("Midnight Open Retracement")
         if not df_grouped.empty:
             selected_days = df_grouped['day'].tolist()
             retracement_df = get_retracement_stats(selected_days)
@@ -85,7 +87,9 @@ def main():
         else:
             st.write("No days meet the selected zone conditions.")
 
-        st.subheader("Zone 1 Retracement after Zone 3 Formation")
+    # Zone 1 Retracement after Zone 3 Formation
+    with col2:
+        st.subheader("Zone 1 Retracement")
         if not df_grouped.empty:
             selected_days = df_grouped['day'].tolist()
             zone1_retracement_df = get_zone1_retracement_stats(selected_days)
