@@ -7,9 +7,22 @@ from slicers import (
     zone_type_filter,
     group_symbols_by_time_zone
 )
-from charts import plot_retracement_bar_chart, get_retracement_stats, \
-    plot_zone1_retracement_bar_chart, get_zone1_retracement_stats  # Add this import
+from charts import plot_retracement_bar_chart, \
+    plot_zone1_retracement_bar_chart  # Add this import
+from analysis import get_retracement_stats, get_zone1_retracement_stats
 
+# Define custom CSS to set the background color
+custom_css = """
+    <style>
+        .stApp {
+            background-color: #1A2526;  /* Dark navy blue background */
+            color: white;              /* Optional: White text for readability */
+        }
+    </style>
+"""
+
+# Inject the custom CSS into the app
+st.markdown(custom_css, unsafe_allow_html=True)
 
 def main():
     st.title("Futures Trading Dashboard")
