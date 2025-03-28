@@ -260,3 +260,79 @@ def get_low_distribution(selected_days):
     all_buckets = pd.DataFrame({'bucket': range(20)})
     df = all_buckets.merge(df, on='bucket', how='left').fillna({'count': 0})
     return df
+
+
+@st.cache_data(show_spinner=False)
+def get_bullish_bearish_stats(selected_days):
+    """
+    Calculate the number of bullish and bearish days from the given set of days.
+
+    Returns:
+    - DataFrame with bullish/bearish counts and probabilities
+    - Dataframe with daily bullish/bearish status
+    """
+    engine = create_engine()
+    query = text("""
+    WITH daily_ohlc AS (
+        SELECT 
+            DATE(ts_event) AS day,
+            first_value(open) OVER (PARTITION BY DATE(ts_event) ORDER BY ts_event) AS day_open,
+            last_value(close) OVER (PARTITION BY DATE(ts_event) ORDER BY ts_event) AS day_close
+        FROM f_ohlcv
+        WHERE DATE(ts_event) IN :selected_days
+        AND hour = 9 AND minute = 30  -- First market candle
+    ),
+    day_types AS (
+        SELECT 
+            day,
+            CASE 
+                WHEN day_close > day_open THEN 'Bullish'
+                WHEN day_close < day_open THEN 'Bearish'
+                ELSE 'Neutral'
+            END AS day_type
+        FROM daily_ohlc
+    )
+    SELECT 
+        day_type, 
+        COUNT(*) AS count,
+        COUNT(*) * 100.0 / (SELECT COUNT(*) FROM day_types) AS percentage
+    FROM day_types
+    GROUP BY day_type
+    ORDER BY count DESC
+    """)
+
+    daily_type_query = text("""
+    WITH daily_ohlc AS (
+        SELECT 
+            DATE(ts_event) AS day,
+            first_value(open) OVER (PARTITION BY DATE(ts_event) ORDER BY ts_event) AS day_open,
+            last_value(close) OVER (PARTITION BY DATE(ts_event) ORDER BY ts_event) AS day_close
+        FROM f_ohlcv
+        WHERE DATE(ts_event) IN :selected_days
+        AND hour = 9 AND minute = 30  -- First market candle
+    ),
+    day_types AS (
+        SELECT 
+            day,
+            CASE 
+                WHEN day_close > day_open THEN 'Bullish'
+                WHEN day_close < day_open THEN 'Bearish'
+                ELSE 'Neutral'
+            END AS day_type
+        FROM daily_ohlc
+    )
+    SELECT 
+        day,
+        day_type
+    FROM day_types
+    ORDER BY day
+    """)
+
+    with engine.connect() as connection:
+        # Get summary statistics
+        summary_df = pd.read_sql_query(query, connection, params={"selected_days": tuple(selected_days)})
+
+        # Get daily types
+        daily_type_df = pd.read_sql_query(daily_type_query, connection, params={"selected_days": tuple(selected_days)})
+
+    return summary_df, daily_type_df

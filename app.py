@@ -8,9 +8,10 @@ from slicers import (
     group_symbols_by_time_zone
 )
 from charts import plot_retracement_bar_chart, plot_zone1_retracement_bar_chart, \
-    plot_high_in_open_probability, plot_high_distribution, plot_low_in_open_probability, plot_low_distribution
+    plot_high_in_open_probability, plot_high_distribution, plot_low_in_open_probability, plot_low_distribution, \
+    plot_bullish_bearish_probability
 from analysis import get_retracement_stats, get_zone1_retracement_stats, get_high_in_open_probability, \
-    get_high_distribution, get_low_in_open_probability, get_low_distribution
+    get_high_distribution, get_low_in_open_probability, get_low_distribution, get_bullish_bearish_stats
 
 # Define custom CSS to set the background color and full width
 custom_css = """
@@ -29,6 +30,7 @@ custom_css = """
 
 # Inject the custom CSS into the app
 st.markdown(custom_css, unsafe_allow_html=True)
+
 
 def main():
     st.title("Futures Trading Dashboard")
@@ -76,6 +78,8 @@ def main():
     high_dist_df = None
     low_prob = None
     low_dist_df = None
+    bullish_bearish_summary = None
+    bullish_bearish_daily = None
 
     # Two-column layout for retracement charts
     st.subheader("Retracement Analysis")
@@ -139,6 +143,18 @@ def main():
         else:
             st.write("No data available.")
 
+    # Bullish/Bearish Day Analysis
+    st.subheader("Bullish/Bearish Day Analysis")
+    if not df_grouped.empty:
+        selected_days = df_grouped['day'].tolist()
+        try:
+            bullish_bearish_summary, bullish_bearish_daily = get_bullish_bearish_stats(selected_days)
+            plot_bullish_bearish_probability(bullish_bearish_summary, bullish_bearish_daily)
+        except Exception as e:
+            st.error(f"Error in Bullish/Bearish Day Analysis: {str(e)}")
+    else:
+        st.write("No data available.")
+
     # Dropdown (Expander) for DataFrames
     with st.expander("View DataFrames"):
         st.subheader("Data Used in Charts")
@@ -185,6 +201,18 @@ def main():
             st.dataframe(low_dist_df, use_container_width=True)
         else:
             st.write("No low distribution data available.")
+
+        # Bullish/Bearish Day Data
+        st.write("**Bullish/Bearish Day Data**")
+        if bullish_bearish_summary is not None and not bullish_bearish_summary.empty:
+            st.write("Day Type Summary:")
+            st.dataframe(bullish_bearish_summary, use_container_width=True)
+
+            st.write("Daily Day Types:")
+            st.dataframe(bullish_bearish_daily, use_container_width=True)
+        else:
+            st.write("No bullish/bearish day data available.")
+
 
 if __name__ == "__main__":
     main()

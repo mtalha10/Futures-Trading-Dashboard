@@ -5,15 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25348cd2-841f-44df-b056-12b289a9006e" name="Changes" comment="first commit">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4a8d641f-44a5-450d-80ae-effca91cba6d.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/4a8d641f-44a5-450d-80ae-effca91cba6d.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4a8d641f-44a5-450d-80ae-effca91cba6d/storage_v2/_src_/database/defaultdb.f1Z3pg/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/4a8d641f-44a5-450d-80ae-effca91cba6d/storage_v2/_src_/database/defaultdb.f1Z3pg/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Instructions.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Instructions.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/charts.py" beforeDir="false" afterPath="$PROJECT_DIR$/charts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/~$structions.docx" beforeDir="false" afterPath="$PROJECT_DIR$/~$structions.docx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,41 +47,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.analysis.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.charts.executor": "Run",
-    "Python.config.executor": "Run",
-    "Python.create_indexes.executor": "Run",
-    "Python.dashboard.executor": "Run",
-    "Python.data_utils.executor": "Run",
-    "Python.database.executor": "Run",
-    "Python.db.executor": "Run",
-    "Python.dbn_to_files.executor": "Run",
-    "Python.files_to_db.executor": "Run",
-    "Python.home.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.slicers.executor": "Run",
-    "Python.style.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "D:/Project",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.charts.executor&quot;: &quot;Run&quot;,
+    &quot;Python.config.executor&quot;: &quot;Run&quot;,
+    &quot;Python.create_indexes.executor&quot;: &quot;Run&quot;,
+    &quot;Python.dashboard.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_utils.executor&quot;: &quot;Run&quot;,
+    &quot;Python.database.executor&quot;: &quot;Run&quot;,
+    &quot;Python.db.executor&quot;: &quot;Run&quot;,
+    &quot;Python.dbn_to_files.executor&quot;: &quot;Run&quot;,
+    &quot;Python.files_to_db.executor&quot;: &quot;Run&quot;,
+    &quot;Python.home.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.slicers.executor&quot;: &quot;Run&quot;,
+    &quot;Python.style.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Project&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="PostgreSQL Project" />
@@ -150,7 +145,9 @@
       <workItem from="1743104313189" duration="2003000" />
       <workItem from="1743106349668" duration="319000" />
       <workItem from="1743109988085" duration="638000" />
-      <workItem from="1743184988150" duration="9220000" />
+      <workItem from="1743184988150" duration="9273000" />
+      <workItem from="1743195113548" duration="3902000" />
+      <workItem from="1743199315282" duration="521000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -280,7 +277,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743106660543</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="first commit">
+      <option name="closed" value="true" />
+      <created>1743195065362</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1743195065362</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
