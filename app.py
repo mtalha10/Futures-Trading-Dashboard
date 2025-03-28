@@ -7,8 +7,10 @@ from slicers import (
     zone_type_filter,
     group_symbols_by_time_zone
 )
-from charts import plot_retracement_bar_chart, plot_zone1_retracement_bar_chart
-from analysis import get_retracement_stats, get_zone1_retracement_stats
+from charts import plot_retracement_bar_chart, plot_zone1_retracement_bar_chart, \
+    plot_high_in_open_probability, plot_high_distribution, plot_low_in_open_probability, plot_low_distribution
+from analysis import get_retracement_stats, get_zone1_retracement_stats, get_high_in_open_probability, \
+    get_high_distribution, get_low_in_open_probability, get_low_distribution
 
 # Define custom CSS to set the background color and full width
 custom_css = """
@@ -57,46 +59,132 @@ def main():
     zone3_type = zone_type_filter("Zone 3")
 
     # Compute grouped data based on zone conditions
-    df_grouped = group_symbols_by_time_zone(
-        start_date, end_date, grouping,
-        zone1_start, zone2_start, zone3_start,
-        zone1_type, zone2_type, zone3_type
-    )
+    try:
+        df_grouped = group_symbols_by_time_zone(
+            start_date, end_date, grouping,
+            zone1_start, zone2_start, zone3_start,
+            zone1_type, zone2_type, zone3_type
+        )
+    except Exception as e:
+        st.error(f"Error in group_symbols_by_time_zone: {str(e)}")
+        return
 
-    # Symbols Grouped by Day and Zone
-    st.subheader("Symbols Grouped by Day and Zone")
-    if not df_grouped.empty:
-        st.write("**Matching Days for Conditions:**")
-        st.write(f"- Zone 1: {zone1_type}")
-        st.write(f"- Zone 2: {zone2_type}")
-        st.write(f"- Zone 3: {zone3_type}")
-        st.dataframe(df_grouped, use_container_width=True)
-    else:
-        st.write("No data available for the selected parameters.")
+    # Initialize DataFrames for later use in the dropdown
+    retracement_df = None
+    zone1_retracement_df = None
+    high_prob = None
+    high_dist_df = None
+    low_prob = None
+    low_dist_df = None
 
     # Two-column layout for retracement charts
+    st.subheader("Retracement Analysis")
     col1, col2 = st.columns(2)
 
     # Midnight Open Retracement Analysis
     with col1:
-        st.subheader("Midnight Open Retracement")
+        st.write("Midnight Open Retracement")
         if not df_grouped.empty:
             selected_days = df_grouped['day'].tolist()
-            retracement_df = get_retracement_stats(selected_days)
-            plot_retracement_bar_chart(retracement_df)
+            try:
+                retracement_df = get_retracement_stats(selected_days)
+                plot_retracement_bar_chart(retracement_df)
+            except Exception as e:
+                st.error(f"Error in Midnight Open Retracement: {str(e)}")
         else:
             st.write("No days meet the selected zone conditions.")
 
     # Zone 1 Retracement after Zone 3 Formation
     with col2:
-        st.subheader("Zone 1 Retracement")
+        st.write("Zone 1 Retracement")
         if not df_grouped.empty:
             selected_days = df_grouped['day'].tolist()
-            zone1_retracement_df = get_zone1_retracement_stats(selected_days)
-            plot_zone1_retracement_bar_chart(zone1_retracement_df)
+            try:
+                zone1_retracement_df = get_zone1_retracement_stats(selected_days)
+                plot_zone1_retracement_bar_chart(zone1_retracement_df)
+            except Exception as e:
+                st.error(f"Error in Zone 1 Retracement: {str(e)}")
         else:
             st.write("No days meet the selected zone conditions.")
 
+    # Daily Stats Section
+    st.subheader("Daily Stats")
+    col_high, col_low = st.columns(2)
+
+    with col_high:
+        st.write("High of Day Analysis")
+        if 'df_grouped' in locals() and not df_grouped.empty:
+            selected_days = df_grouped['day'].tolist()
+            try:
+                high_prob = get_high_in_open_probability(selected_days)
+                plot_high_in_open_probability(high_prob)
+                high_dist_df = get_high_distribution(selected_days)
+                plot_high_distribution(high_dist_df)
+            except Exception as e:
+                st.error(f"Error in High of Day Analysis: {str(e)}")
+        else:
+            st.write("No data available.")
+
+    with col_low:
+        st.write("Low of Day Analysis")
+        if 'df_grouped' in locals() and not df_grouped.empty:
+            selected_days = df_grouped['day'].tolist()
+            try:
+                low_prob = get_low_in_open_probability(selected_days)
+                plot_low_in_open_probability(low_prob)
+                low_dist_df = get_low_distribution(selected_days)
+                plot_low_distribution(low_dist_df)
+            except Exception as e:
+                st.error(f"Error in Low of Day Analysis: {str(e)}")
+        else:
+            st.write("No data available.")
+
+    # Dropdown (Expander) for DataFrames
+    with st.expander("View DataFrames"):
+        st.subheader("Data Used in Charts")
+
+        # Symbols Grouped by Day and Zone
+        st.write("**Symbols Grouped by Day and Zone**")
+        if not df_grouped.empty:
+            st.write("Matching Days for Conditions:")
+            st.write(f"- Zone 1: {zone1_type}")
+            st.write(f"- Zone 2: {zone2_type}")
+            st.write(f"- Zone 3: {zone3_type}")
+            st.dataframe(df_grouped, use_container_width=True)
+        else:
+            st.write("No data available for the selected parameters.")
+
+        # Midnight Open Retracement DataFrame
+        st.write("**Midnight Open Retracement Data**")
+        if retracement_df is not None and not retracement_df.empty:
+            st.dataframe(retracement_df, use_container_width=True)
+        else:
+            st.write("No retracement data available.")
+
+        # Zone 1 Retracement DataFrame
+        st.write("**Zone 1 Retracement Data**")
+        if zone1_retracement_df is not None and not zone1_retracement_df.empty:
+            st.dataframe(zone1_retracement_df, use_container_width=True)
+        else:
+            st.write("No Zone 1 retracement data available.")
+
+        # High of Day Data
+        st.write("**High of Day Data**")
+        if high_prob is not None:
+            st.write(f"High in Open Probability: {high_prob:.2%}")
+        if high_dist_df is not None and not high_dist_df.empty:
+            st.dataframe(high_dist_df, use_container_width=True)
+        else:
+            st.write("No high distribution data available.")
+
+        # Low of Day Data
+        st.write("**Low of Day Data**")
+        if low_prob is not None:
+            st.write(f"Low in Open Probability: {low_prob:.2%}")
+        if low_dist_df is not None and not low_dist_df.empty:
+            st.dataframe(low_dist_df, use_container_width=True)
+        else:
+            st.write("No low distribution data available.")
 
 if __name__ == "__main__":
     main()

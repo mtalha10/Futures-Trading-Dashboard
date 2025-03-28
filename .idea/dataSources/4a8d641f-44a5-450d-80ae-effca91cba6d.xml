@@ -7,7 +7,7 @@
 14642||10|C|G
 14642||-9223372036854775808|T|G
 14642||10|T|G</Grants>
-      <IntrospectionStateNumber>17460</IntrospectionStateNumber>
+      <IntrospectionStateNumber>34237</IntrospectionStateNumber>
       <ServerVersion>16.8</ServerVersion>
       <StartupTime>1742862776</StartupTime>
       <TimeZones>true ACDT
@@ -312,7 +312,7 @@ false Asia/Irkutsk
 false Asia/Istanbul
 false Asia/Jakarta
 false Asia/Jayapura
-false Asia/Jerusalem
+true Asia/Jerusalem
 false Asia/Kabul
 false Asia/Kamchatka
 false Asia/Karachi
@@ -355,7 +355,7 @@ false Asia/Taipei
 false Asia/Tashkent
 false Asia/Tbilisi
 false Asia/Tehran
-false Asia/Tel_Aviv
+true Asia/Tel_Aviv
 false Asia/Thimbu
 false Asia/Thimphu
 false Asia/Tokyo
@@ -607,7 +607,7 @@ false Indian/Mauritius
 false Indian/Mayotte
 false Indian/Reunion
 false Iran
-false Israel
+true Israel
 false JAYT
 false JST
 false Jamaica
@@ -1066,7 +1066,7 @@ false posix/Asia/Irkutsk
 false posix/Asia/Istanbul
 false posix/Asia/Jakarta
 false posix/Asia/Jayapura
-false posix/Asia/Jerusalem
+true posix/Asia/Jerusalem
 false posix/Asia/Kabul
 false posix/Asia/Kamchatka
 false posix/Asia/Karachi
@@ -1109,7 +1109,7 @@ false posix/Asia/Taipei
 false posix/Asia/Tashkent
 false posix/Asia/Tbilisi
 false posix/Asia/Tehran
-false posix/Asia/Tel_Aviv
+true posix/Asia/Tel_Aviv
 false posix/Asia/Thimbu
 false posix/Asia/Thimphu
 false posix/Asia/Tokyo
@@ -1304,7 +1304,7 @@ false posix/Indian/Mauritius
 false posix/Indian/Mayotte
 false posix/Indian/Reunion
 false posix/Iran
-false posix/Israel
+true posix/Israel
 false posix/Jamaica
 false posix/Japan
 false posix/Kwajalein
@@ -1406,7 +1406,7 @@ true posixrules
 14277||10|C|G
 14277||-9223372036854775808|U|G
 14277||10|U|G</Grants>
-      <IntrospectionStateNumber>17460</IntrospectionStateNumber>
+      <IntrospectionStateNumber>34237</IntrospectionStateNumber>
       <ObjectId>16441</ObjectId>
       <OwnerName>avnadmin</OwnerName>
     </database>
@@ -4867,8 +4867,8 @@ timescaledb.disable_load=on</Config>
     <schema id="270" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>17460</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-03-26.22:02:56</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>34237</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-03-28.20:11:01</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>523</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>

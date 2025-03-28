@@ -13,7 +13,6 @@ DB_NAME = "defaultdb"
 def create_engine():
     """
     Create and return a SQLAlchemy engine using SSL with hardcoded credentials.
-
     Returns:
         sqlalchemy.Engine: The SQLAlchemy engine for database interaction.
     """
