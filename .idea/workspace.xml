@@ -5,7 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25348cd2-841f-44df-b056-12b289a9006e" name="Changes" comment="first commit">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4a8d641f-44a5-450d-80ae-effca91cba6d.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/4a8d641f-44a5-450d-80ae-effca91cba6d.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4a8d641f-44a5-450d-80ae-effca91cba6d/storage_v2/_src_/database/defaultdb.f1Z3pg/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/4a8d641f-44a5-450d-80ae-effca91cba6d/storage_v2/_src_/database/defaultdb.f1Z3pg/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts.py" beforeDir="false" afterPath="$PROJECT_DIR$/charts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/db.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/slicers.py" beforeDir="false" afterPath="$PROJECT_DIR$/slicers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,7 +150,8 @@
       <workItem from="1743109988085" duration="638000" />
       <workItem from="1743184988150" duration="9273000" />
       <workItem from="1743195113548" duration="3902000" />
-      <workItem from="1743199315282" duration="676000" />
+      <workItem from="1743199315282" duration="714000" />
+      <workItem from="1743204040110" duration="2751000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -290,7 +297,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743199864248</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="first commit">
+      <option name="closed" value="true" />
+      <created>1743200001982</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1743200001982</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

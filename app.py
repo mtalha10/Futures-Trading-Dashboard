@@ -52,7 +52,7 @@ def main():
     st.sidebar.header("Zone Time Filters")
     zone1_start, zone1_duration = zone_filter("Zone 1 (e.g., 18:00)", 18, 0)
     zone2_start, zone2_duration = zone_filter("Zone 2 (e.g., 03:00)", 3, 0)
-    zone3_start, zone3_duration = zone_filter("Zone 3 (e.g., 09:30)", 9, 30)
+    zone3_start, zone3_duration = zone_filter("Zone 3 (e.g., 09:30)", 9, 30, minute_min=30)
 
     # Sidebar: Zone type filters
     st.sidebar.header("Zone Condition Filters")

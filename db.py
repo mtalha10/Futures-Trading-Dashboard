@@ -23,7 +23,6 @@ def create_engine():
         host=DB_HOST,
         port=DB_PORT,
         database=DB_NAME,
-        query={'sslmode': 'require'}  # Enforce SSL connection
     )
     engine = sqlalchemy.create_engine(connection_url)
     return engine

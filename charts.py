@@ -370,37 +370,37 @@ def plot_bullish_bearish_probability(summary_df, daily_type_df):
     )
     st.plotly_chart(fig1, use_container_width=True)
 
-    # Daily Breakdown Chart
-    fig2 = px.bar(
-        daily_type_df,
-        x='day',
-        y='day_type',
-        title='Daily Day Type Breakdown',
-        color='day_type',
-        color_discrete_map={
-            'Bullish': '#00C4B4',  # Green for bullish
-            'Bearish': '#FF6666',  # Red for bearish
-            'Neutral': '#888888'  # Gray for neutral
-        }
-    )
-
-    fig2.update_layout(
-        plot_bgcolor='#1A2526',
-        paper_bgcolor='#1A2526',
-        font_color='white',
-        title_font_color='white',
-        xaxis=dict(
-            tickangle=45,
-            linecolor='lightgray',
-            tickcolor='lightgray',
-            tickfont_color='white'
-        ),
-        yaxis=dict(
-            showgrid=True,
-            gridcolor='lightgray',
-            linecolor='lightgray',
-            tickcolor='lightgray',
-            tickfont_color='white'
-        )
-    )
-    st.plotly_chart(fig2, use_container_width=True)
+    # # Daily Breakdown Chart
+    # fig2 = px.bar(
+    #     daily_type_df,
+    #     x='day',
+    #     y='day_type',
+    #     title='Daily Day Type Breakdown',
+    #     color='day_type',
+    #     color_discrete_map={
+    #         'Bullish': '#00C4B4',  # Green for bullish
+    #         'Bearish': '#FF6666',  # Red for bearish
+    #         'Neutral': '#888888'  # Gray for neutral
+    #     }
+    # )
+    #
+    # fig2.update_layout(
+    #     plot_bgcolor='#1A2526',
+    #     paper_bgcolor='#1A2526',
+    #     font_color='white',
+    #     title_font_color='white',
+    #     xaxis=dict(
+    #         tickangle=45,
+    #         linecolor='lightgray',
+    #         tickcolor='lightgray',
+    #         tickfont_color='white'
+    #     ),
+    #     yaxis=dict(
+    #         showgrid=True,
+    #         gridcolor='lightgray',
+    #         linecolor='lightgray',
+    #         tickcolor='lightgray',
+    #         tickfont_color='white'
+    #     )
+    # )
+    # st.plotly_chart(fig2, use_container_width=True)
