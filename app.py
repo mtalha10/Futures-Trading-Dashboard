@@ -39,8 +39,8 @@ def main():
     st.sidebar.header("Filters")
     start_date = start_date_filter()
     end_date = end_date_filter()
-    symbol_filter_value = symbol_filter()
     category_filter_value = category_filter()
+    symbol_filter_value = symbol_filter()
     grouping = grouping_filter()
 
 
