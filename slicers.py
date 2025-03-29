@@ -1,10 +1,18 @@
+# ------------------------------------------------
+# -------------- IMPORTS -------------------------
+#  Import necessary libraries and modules.
+# ------------------------------------------------
 import streamlit as st
 from datetime import datetime, timedelta
 from db import create_engine
 from sqlalchemy import text
 import pandas as pd
 
-
+# ------------------------------------------------
+# ------- Analysis Purpose: Date Range -----------
+#  Connect to the database and fetch the minimum
+#  and maximum dates from the ts_event column.
+# ------------------------------------------------
 @st.cache_data(show_spinner=False)
 def get_date_range():
     """
@@ -20,7 +28,10 @@ def get_date_range():
     max_date = row["max_date"].date() if row["max_date"] else None
     return min_date, max_date
 
-
+# ------------------------------------------------
+# -------- Analysis Purpose: Start Date Filter ----
+#  Create a start date filter widget in the sidebar.
+# ------------------------------------------------
 def start_date_filter():
     """
     Creates a start date filter widget in the sidebar.
@@ -37,7 +48,10 @@ def start_date_filter():
     )
     return start_date
 
-
+# ------------------------------------------------
+# -------- Analysis Purpose: End Date Filter ------
+#  Create an end date filter widget in the sidebar.
+# ------------------------------------------------
 def end_date_filter():
     """
     Creates an end date filter widget in the sidebar.
@@ -54,7 +68,11 @@ def end_date_filter():
     )
     return end_date
 
-
+# ------------------------------------------------
+# ------- Analysis Purpose: Grouping Filter --------
+#  Create a selectbox for choosing the time grouping unit.
+#  Options include: year, month, week, day, hour, minute.
+# ------------------------------------------------
 def grouping_filter():
     """
     Creates a selectbox in the sidebar to choose the time grouping unit.
@@ -68,7 +86,11 @@ def grouping_filter():
     )
     return grouping_choice
 
-
+# ------------------------------------------------
+# -------- Analysis Purpose: Symbol Filter --------
+#  Create a text input widget for filtering by symbol.
+#  Multiple symbols can be entered, separated by commas.
+# ------------------------------------------------
 def symbol_filter():
     """
     Creates a text input widget in the sidebar for filtering by symbol.
@@ -76,7 +98,11 @@ def symbol_filter():
     """
     return st.sidebar.text_input("Symbol Filter (contains, comma separated)", value="")
 
-
+# ------------------------------------------------
+# ------- Analysis Purpose: Category Filter -------
+#  Create a text input widget for filtering by category.
+#  Multiple comma-separated category prefixes are supported.
+# ------------------------------------------------
 def category_filter():
     """
     Creates a text input widget in the sidebar for filtering by category.
@@ -85,11 +111,16 @@ def category_filter():
     """
     return st.sidebar.text_input("Category Filter 6E, ES, NQ, RT(starts with, comma separated)", value="")
 
-
+# ------------------------------------------------
+# -------- Analysis Purpose: Zone Filter -----------
+#  Create filters for a trading zone with inputs for hour and minute.
+#  The duration is fixed at 60 minutes.
+# ------------------------------------------------
 def zone_filter(zone_label, default_hour, default_minute, minute_min=0, minute_max=59):
     """
     Creates a filter for a trading zone in the sidebar using a number input for hour and a slider for minute.
-    The user enters the start hour (0-23) and selects the start minute (from minute_min to minute_max); the duration is fixed at 60 minutes.
+    The user enters the start hour (0-23) and selects the start minute (from minute_min to minute_max);
+    the duration is fixed at 60 minutes.
     """
     st.sidebar.subheader(zone_label)
     zone_hour = st.sidebar.number_input(
@@ -110,7 +141,10 @@ def zone_filter(zone_label, default_hour, default_minute, minute_min=0, minute_m
     zone_duration = 60  # Fixed duration in minutes
     return zone_start_time, zone_duration
 
-
+# ------------------------------------------------
+# -------- Analysis Purpose: Zone Type Filter ----
+#  Create a dropdown with condition options for each zone.
+# ------------------------------------------------
 def zone_type_filter(zone_label):
     """
     Creates a dropdown with zone condition options.
@@ -134,14 +168,17 @@ def zone_type_filter(zone_label):
             "Stacked with Zone 1 & Zone 2"
         ]
     }
-
     return st.sidebar.selectbox(
         f"{zone_label} Condition",
         zone_condition_options[zone_label],
         index=0
     )
 
-
+# ------------------------------------------------
+# ------ Analysis Purpose: Group Symbols by Time Zone -----
+#  Groups symbols by day and checks zone conditions.
+#  Also filters rows by symbol and category if provided.
+# ------------------------------------------------
 @st.cache_data(show_spinner=False)
 def group_symbols_by_time_zone(start_date, end_date, grouping,
                                zone1_start, zone2_start, zone3_start,
@@ -168,10 +205,10 @@ def group_symbols_by_time_zone(start_date, end_date, grouping,
     engine = create_engine()
 
     # Process comma-separated filter values, converting to uppercase.
-    symbol_list = [s.strip().upper() for s in symbol_filter_value.split(',') if
-                   s.strip()] if symbol_filter_value.strip() != "" else []
-    category_list = [s.strip().upper() for s in category_filter_value.split(',') if
-                     s.strip()] if category_filter_value.strip() != "" else []
+    symbol_list = [s.strip().upper() for s in symbol_filter_value.split(',') if s.strip()] \
+        if symbol_filter_value.strip() != "" else []
+    category_list = [s.strip().upper() for s in category_filter_value.split(',') if s.strip()] \
+        if category_filter_value.strip() != "" else []
 
     query = f"""
     WITH zone_data AS (

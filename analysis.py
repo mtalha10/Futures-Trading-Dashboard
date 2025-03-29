@@ -1,4 +1,8 @@
-# analysis.py
+# ------------------------------------------------
+# -------------- Analysis Module -----------------
+#   This module calculates various market statistics
+#   using SQL queries and returns the results as DataFrames.
+# ------------------------------------------------
 
 import streamlit as st
 from datetime import datetime, timedelta
@@ -6,6 +10,12 @@ from db import create_engine
 from sqlalchemy import text
 import pandas as pd
 
+# ------------------------------------------------
+# -------- Analysis Purpose: Retracement Stats ----
+#  Calculate retracement statistics for days meeting zone conditions.
+#  Returns a DataFrame with bucket numbers (-1 for no retracement,
+#  0-15 for time buckets) and counts.
+# ------------------------------------------------
 @st.cache_data(show_spinner=False)
 def get_retracement_stats(selected_days):
     """
@@ -47,6 +57,11 @@ def get_retracement_stats(selected_days):
         df = pd.read_sql_query(query, connection, params={"selected_days": tuple(selected_days)})
     return df
 
+# ------------------------------------------------
+# -------- Analysis Purpose: Time Bucket Labels ---
+#  Generate labels for 30-minute buckets from 08:00 to 16:00.
+#  Returns a list of strings, e.g., ['08:00-08:30', ..., '15:30-16:00'].
+# ------------------------------------------------
 def get_time_bucket_labels():
     """
     Generate labels for 30-minute buckets from 08:00 to 16:00.
@@ -62,8 +77,13 @@ def get_time_bucket_labels():
             labels.append(f"{start_time}-{end_time}")
     return labels
 
-
-
+# ------------------------------------------------
+# -------- Analysis Purpose: Zone 1 Retracement Stats ---
+#  Calculate retracement statistics for days where price retraced
+#  to Zone 1 after Zone 3 is fully formed.
+#  Returns a DataFrame with bucket numbers (bucket >= 0 for a retracement; -1 for no retracement)
+#  and counts.
+# ------------------------------------------------
 @st.cache_data(show_spinner=False)
 def get_zone1_retracement_stats(selected_days):
     """
@@ -123,7 +143,12 @@ def get_zone1_retracement_stats(selected_days):
         df = pd.read_sql_query(query, connection, params={"selected_days": tuple(selected_days)})
     return df
 
-
+# ------------------------------------------------
+# -------- Analysis Purpose: Zone 1 Time Bucket Labels ---
+#  Generate labels for 30-minute buckets starting from Zone 3 end time
+#  (assumed 09:35) until the end of day at 16:00.
+#  Returns a list of strings, e.g., ['09:35-10:05', '10:05-10:35', ...].
+# ------------------------------------------------
 def get_zone1_time_bucket_labels():
     """
     Generate labels for 30-minute buckets starting from Zone 3 end time (assumed 09:35)
@@ -141,7 +166,10 @@ def get_zone1_time_bucket_labels():
         labels.append(f"{bucket_start}-{bucket_end}")
     return labels
 
-# Probability of high occurring during market open
+# ------------------------------------------------
+# -------- Analysis Purpose: High in Open Probability ---
+#  Calculate the probability of the high of day occurring during market open.
+# ------------------------------------------------
 @st.cache_data(show_spinner=False)
 def get_high_in_open_probability(selected_days):
     query = text("""
@@ -166,7 +194,10 @@ def get_high_in_open_probability(selected_days):
     total_days = len(selected_days)
     return result / total_days if total_days > 0 else 0
 
-# Probability of low occurring during market open
+# ------------------------------------------------
+# -------- Analysis Purpose: Low in Open Probability ----
+#  Calculate the probability of the low of day occurring during market open.
+# ------------------------------------------------
 @st.cache_data(show_spinner=False)
 def get_low_in_open_probability(selected_days):
     query = text("""
@@ -191,7 +222,12 @@ def get_low_in_open_probability(selected_days):
     total_days = len(selected_days)
     return result / total_days if total_days > 0 else 0
 
-# Time distribution of high of day
+# ------------------------------------------------
+# -------- Analysis Purpose: High Distribution ----
+#  Compute the time distribution of the high of day
+#  across 48 time buckets covering the entire day (00:00 to 24:00),
+#  with each bucket representing a 30-minute interval.
+# ------------------------------------------------
 @st.cache_data(show_spinner=False)
 def get_high_distribution(selected_days):
     query = text("""
@@ -199,14 +235,14 @@ def get_high_distribution(selected_days):
         SELECT DATE(ts_event) AS day, MAX(high) AS day_high
         FROM f_ohlcv
         WHERE DATE(ts_event) IN :selected_days
-        AND hour >= 9 AND hour <= 15
         GROUP BY DATE(ts_event)
     ),
     first_high_times AS (
         SELECT dh.day, MIN(f.ts_event) AS first_high_time
         FROM day_highs dh
-        JOIN f_ohlcv f ON DATE(f.ts_event) = dh.day AND f.high = dh.day_high
-        WHERE f.hour >= 9 AND f.hour <= 15
+        JOIN f_ohlcv f 
+            ON DATE(f.ts_event) = dh.day 
+            AND f.high = dh.day_high
         GROUP BY dh.day
     ),
     first_high_details AS (
@@ -214,19 +250,25 @@ def get_high_distribution(selected_days):
                EXTRACT(MINUTE FROM first_high_time) AS minute
         FROM first_high_times
     )
-    SELECT FLOOR(((hour - 9) * 60 + minute) / 21) AS bucket, COUNT(*) AS count
+    SELECT FLOOR((hour * 60 + minute) / 30) AS bucket, COUNT(*) AS count
     FROM first_high_details
     GROUP BY bucket
     ORDER BY bucket
     """)
     with create_engine().connect() as connection:
         df = pd.read_sql_query(query, connection, params={"selected_days": tuple(selected_days)})
-    # Ensure all buckets (0-19) are present
-    all_buckets = pd.DataFrame({'bucket': range(20)})
+    # Ensure all buckets (0-47) are present even if count is 0
+    all_buckets = pd.DataFrame({'bucket': range(48)})
     df = all_buckets.merge(df, on='bucket', how='left').fillna({'count': 0})
     return df
 
-# Time distribution of low of day
+
+# ------------------------------------------------
+# -------- Analysis Purpose: Low Distribution -----
+#  Compute the time distribution of the low of day
+#  across 48 time buckets covering the entire day (00:00 to 24:00),
+#  with each bucket representing a 30-minute interval.
+# ------------------------------------------------
 @st.cache_data(show_spinner=False)
 def get_low_distribution(selected_days):
     query = text("""
@@ -234,14 +276,12 @@ def get_low_distribution(selected_days):
         SELECT DATE(ts_event) AS day, MIN(low) AS day_low
         FROM f_ohlcv
         WHERE DATE(ts_event) IN :selected_days
-        AND hour >= 9 AND hour <= 15
         GROUP BY DATE(ts_event)
     ),
     first_low_times AS (
         SELECT dl.day, MIN(f.ts_event) AS first_low_time
         FROM day_lows dl
         JOIN f_ohlcv f ON DATE(f.ts_event) = dl.day AND f.low = dl.day_low
-        WHERE f.hour >= 9 AND f.hour <= 15
         GROUP BY dl.day
     ),
     first_low_details AS (
@@ -249,19 +289,25 @@ def get_low_distribution(selected_days):
                EXTRACT(MINUTE FROM first_low_time) AS minute
         FROM first_low_times
     )
-    SELECT FLOOR(((hour - 9) * 60 + minute) / 21) AS bucket, COUNT(*) AS count
+    SELECT FLOOR((hour * 60 + minute) / 30) AS bucket, COUNT(*) AS count
     FROM first_low_details
     GROUP BY bucket
     ORDER BY bucket
     """)
     with create_engine().connect() as connection:
         df = pd.read_sql_query(query, connection, params={"selected_days": tuple(selected_days)})
-    # Ensure all buckets (0-19) are present
-    all_buckets = pd.DataFrame({'bucket': range(20)})
+    # Ensure all buckets (0-47) are present even if count is 0
+    all_buckets = pd.DataFrame({'bucket': range(48)})
     df = all_buckets.merge(df, on='bucket', how='left').fillna({'count': 0})
     return df
 
 
+# ------------------------------------------------
+# -------- Analysis Purpose: Bullish/Bearish Stats ---
+#  Calculate the number of bullish and bearish days from the given set of days.
+#  Returns a summary DataFrame with counts and percentages,
+#  along with a daily breakdown of bullish/bearish status.
+# ------------------------------------------------
 @st.cache_data(show_spinner=False)
 def get_bullish_bearish_stats(selected_days):
     """
