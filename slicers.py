@@ -62,11 +62,28 @@ def grouping_filter():
     """
     grouping_options = ['year', 'month', 'week', 'day', 'hour', 'minute']
     grouping_choice = st.sidebar.selectbox(
-        "Group by Time Unit",
+        "Time Category According To Symbols",
         options=grouping_options,
         index=3  # default to 'day'
     )
     return grouping_choice
+
+
+def symbol_filter():
+    """
+    Creates a text input widget in the sidebar for filtering by symbol.
+    Enter multiple symbols separated by commas (e.g., "6EQ4, 6EF1").
+    """
+    return st.sidebar.text_input("Symbol Filter (contains, comma separated)", value="")
+
+
+def category_filter():
+    """
+    Creates a text input widget in the sidebar for filtering by category.
+    Enter multiple comma-separated category prefixes (e.g., "6E, 6F").
+    The filter matches rows whose category starts with any of the given prefixes.
+    """
+    return st.sidebar.text_input("Category Filter 6E, ES, NQ, RT(starts with, comma separated)", value="")
 
 
 def zone_filter(zone_label, default_hour, default_minute, minute_min=0, minute_max=59):
@@ -128,12 +145,15 @@ def zone_type_filter(zone_label):
 @st.cache_data(show_spinner=False)
 def group_symbols_by_time_zone(start_date, end_date, grouping,
                                zone1_start, zone2_start, zone3_start,
-                               zone1_type, zone2_type, zone3_type):
+                               zone1_type, zone2_type, zone3_type,
+                               symbol_filter_value, category_filter_value):
     """
     Groups symbols by day and checks zone conditions.
       - Zone 1: Compares with Zone 2.
       - Zone 2: Compares with Zone 1.
       - Zone 3: Compares with both Zone 1 and Zone 2.
+
+    Also filters rows by symbol and category if provided.
 
     Checks three conditions for each zone:
       - "Above": the zone's max is greater than the compared zone(s).
@@ -146,6 +166,12 @@ def group_symbols_by_time_zone(start_date, end_date, grouping,
     zone3_end = (datetime.combine(datetime.today(), zone3_start) + timedelta(minutes=60)).time()
 
     engine = create_engine()
+
+    # Process comma-separated filter values, converting to uppercase.
+    symbol_list = [s.strip().upper() for s in symbol_filter_value.split(',') if
+                   s.strip()] if symbol_filter_value.strip() != "" else []
+    category_list = [s.strip().upper() for s in category_filter_value.split(',') if
+                     s.strip()] if category_filter_value.strip() != "" else []
 
     query = f"""
     WITH zone_data AS (
@@ -160,6 +186,8 @@ def group_symbols_by_time_zone(start_date, end_date, grouping,
             string_agg(DISTINCT symbol, ', ') as symbols
         FROM f_ohlcv
         WHERE ts_event BETWEEN :start_date AND :end_date
+          AND (:symbol_filter = '' OR UPPER(symbol) = ANY(:symbol_list))
+          AND (:category_filter = '' OR UPPER(category) = ANY(:category_list))
         GROUP BY day
     ),
     zone_conditions AS (
@@ -237,7 +265,11 @@ def group_symbols_by_time_zone(start_date, end_date, grouping,
         "zone3_end": zone3_end.strftime("%H:%M:%S"),
         "zone1_type": zone1_type,
         "zone2_type": zone2_type,
-        "zone3_type": zone3_type
+        "zone3_type": zone3_type,
+        "symbol_filter": symbol_filter_value.strip(),
+        "category_filter": category_filter_value.strip(),
+        "symbol_list": symbol_list,
+        "category_list": category_list
     }
 
     df = pd.read_sql_query(text(query), engine, params=params)

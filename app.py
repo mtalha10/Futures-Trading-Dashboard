@@ -5,7 +5,7 @@ from slicers import (
     grouping_filter,
     zone_filter,
     zone_type_filter,
-    group_symbols_by_time_zone
+    group_symbols_by_time_zone, symbol_filter, category_filter
 )
 from charts import plot_retracement_bar_chart, plot_zone1_retracement_bar_chart, \
     plot_high_in_open_probability, plot_high_distribution, plot_low_in_open_probability, plot_low_distribution, \
@@ -39,7 +39,10 @@ def main():
     st.sidebar.header("Filters")
     start_date = start_date_filter()
     end_date = end_date_filter()
+    symbol_filter_value = symbol_filter()
+    category_filter_value = category_filter()
     grouping = grouping_filter()
+
 
     if not (start_date and end_date):
         st.error("Please select a valid date range.")
@@ -47,6 +50,7 @@ def main():
     if start_date > end_date:
         st.error("Start date must be before or equal to the end date.")
         return
+    # Sidebar: Symbol and Category filters
 
     # Sidebar: Zone filters
     st.sidebar.header("Zone Time Filters")
@@ -60,12 +64,14 @@ def main():
     zone2_type = zone_type_filter("Zone 2")
     zone3_type = zone_type_filter("Zone 3")
 
+
     # Compute grouped data based on zone conditions
     try:
         df_grouped = group_symbols_by_time_zone(
             start_date, end_date, grouping,
             zone1_start, zone2_start, zone3_start,
-            zone1_type, zone2_type, zone3_type
+            zone1_type, zone2_type, zone3_type,
+            symbol_filter_value, category_filter_value
         )
     except Exception as e:
         st.error(f"Error in group_symbols_by_time_zone: {str(e)}")
